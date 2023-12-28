@@ -3,7 +3,6 @@
 #include <vector>
 #include <fstream>
 
-
 class Step {
 public:
     virtual void execute() = 0;
@@ -35,6 +34,7 @@ public:
         // the user can't continue unless he either completes the step
         // or skips it
         while (true) {
+            getline(std::cin, choice);
             if (choice == "1") {
                 // Ask the user to input the title and subtitle
                 std::cout << "---------------------------\n";
@@ -57,6 +57,7 @@ public:
             } 
             else {
                 std::cout << "Invalid choice! Please try again.\n";
+                std::cout << "Enter your choice: ";
             }
         }
     }
@@ -88,6 +89,7 @@ public:
         // the user can't continue unless he either completes the step
         // or skips it
         while (true) {
+            getline(std::cin, choice);
             if (choice == "1") {
                 // Ask the user to input the title and copy
                 std::cout << "---------------------------\n";
@@ -110,8 +112,8 @@ public:
             }
             else {
                 std::cout << "Invalid choice! Please try again.\n";
+                std::cout << "Enter your choice: ";
             }
-        
         }
     }
 };
@@ -137,11 +139,11 @@ public:
         std::cout << "2. Skip this step\n";
         std::cout << "Enter your choice: ";
         std::string choice;
-        getline(std::cin, choice);
 
         // the user can't continue unless he either completes the step
         // or skips it
         while (true) {
+            getline(std::cin, choice);
             if (choice == "1") {
                 // Ask the user to input the description and text
                 std::cout << "---------------------------\n";
@@ -164,6 +166,7 @@ public:
             }
             else {
                 std::cout << "Invalid choice! Please try again.\n";
+                std::cout << "Enter your choice: ";
             }
         }
     }
@@ -177,6 +180,10 @@ private:
 public:
     float getNumber() {
         return number;
+    }
+
+    std::string getDescription() {
+        return description;
     }
 
     NumberInput(std::string description, float number) : description(description), number(number) {}
@@ -194,11 +201,12 @@ public:
         std::cout << "2. Skip this step\n";
         std::cout << "Enter your choice: ";
         std::string choice;
-        getline(std::cin, choice);
 
         // the user can't continue unless he either completes the step
         // or skips it
         while (true) {
+            getline(std::cin, choice);
+            
             if (choice == "1") {
                 // Ask the user to input the description and number
                 std::cout << "---------------------------\n";
@@ -221,17 +229,21 @@ public:
             }
             else {
                 std::cout << "Invalid choice! Please try again.\n";
+                std::cout << "Enter your choice: ";
             }
         }
     }
 };
 
 
+std::vector<NumberInput*> currentFlowNumberInputs;
+
 class CalculusStep : public Step {
 private:
     Step* step1, * step2;
     float number1, number2, result;
     std::string operation;
+    std::vector<NumberInput*> numberInputs;
 
 
     void add() {
@@ -263,7 +275,7 @@ public:
     float getResult() {
         return result;
     }
-    
+
     void execute() override {
         std::cout << "---------------------------\n";
         std::cout << "Running Calculus Step:\n";
@@ -271,38 +283,94 @@ public:
         std::cout << "2. Skip this step\n";
         std::cout << "Enter your choice: ";
         std::string choice;
-        getline(std::cin, choice);
+        
+        while (true) {
+            getline(std::cin, choice);
 
-        if (choice == "1") {
-            // Prompt the user to choose from existing NumberInputStep objects
-            std::cout << "Choose the first number input step:\n";
-            // TODO: Display a list of available NumberInputStep objects and let the user choose
+            if (choice == "1") {
 
-            std::cout << "Choose the second number input step:\n";
-            // TODO: Display a list of available NumberInputStep objects and let the user choose
+                std::cout << "Choose the first number input step:\n";
+                int chosenNumberInputIndex1 = -1;
+                while (chosenNumberInputIndex1 < 0 || chosenNumberInputIndex1 >= currentFlowNumberInputs.size()) {
+                    // Display a list of available NumberInputStep objects and let the user choose
+                    for (int i = 0; i < currentFlowNumberInputs.size(); i++) {
+                        std::cout << i + 1 << ". " << currentFlowNumberInputs[i]->getNumber() << " (" << currentFlowNumberInputs[i]->getDescription() << ")" << "\n";
+                    }
+                    std::cout << "Enter your choice: ";
+                    std::string chosenNumberInput1Str;
+                    getline(std::cin, chosenNumberInput1Str);
+                    chosenNumberInputIndex1 = std::stoi(chosenNumberInput1Str) - 1;
 
-            std::cout << "Choose the operation:\n";
-            std::cout << "1. Addition\n";
-            std::cout << "2. Subtraction\n";
-            std::cout << "Enter your choice: ";
-            std::string operationChoice;
-            getline(std::cin, operationChoice);
+                    if (chosenNumberInputIndex1 < 0 || chosenNumberInputIndex1 >= currentFlowNumberInputs.size()) {
+                        std::cout << "Invalid choice! Please try again.\n";
+                    }
+                }
+            
+                std::cout << "Choose the second number input step:\n";
+                int chosenNumberInputIndex2 = -1;
+                while (chosenNumberInputIndex2 < 0 || chosenNumberInputIndex2 >= currentFlowNumberInputs.size()) {
+                    // Display a list of available NumberInputStep objects and let the user choose
+                    for (int i = 0; i < currentFlowNumberInputs.size(); i++) {
+                        std::cout << i + 1 << ". " << currentFlowNumberInputs[i]->getNumber() << " (" << currentFlowNumberInputs[i]->getDescription() << ")" << "\n";
+                    }
+                    std::cout << "Enter your choice: ";
+                    std::string chosenNumberInput2Str;
+                    getline(std::cin, chosenNumberInput2Str);
+                    chosenNumberInputIndex2 = std::stoi(chosenNumberInput2Str) - 1;
 
-            // Perform the calculation based on the user's choices
-            if (operationChoice == "1") {
-                // Perform addition
-                // TODO: Get the numbers from the chosen NumberInputStep objects and perform the addition
-            } else if (operationChoice == "2") {
-                // Perform subtraction
-                // TODO: Get the numbers from the chosen NumberInputStep objects and perform the subtraction
+                    if (chosenNumberInputIndex2 < 0 || chosenNumberInputIndex2 >= currentFlowNumberInputs.size()) {
+                        std::cout << "Invalid choice! Please try again.\n";
+                    }
+                }
+
+                number1 = currentFlowNumberInputs[chosenNumberInputIndex1]->getNumber();
+                number2 = currentFlowNumberInputs[chosenNumberInputIndex2]->getNumber();
+
+                std::cout << "Choose the operation:\n";
+                std::cout << "1. Addition\n";
+                std::cout << "2. Subtraction\n";
+                std::cout << "3. Multiplication\n";
+                std::cout << "4. Division\n";
+                std::cout << "5. Min\n";
+                std::cout << "6. Max\n";
+                std::cout << "Enter your choice: ";
+                std::string operationChoice;
+                getline(std::cin, operationChoice);
+
+                // Perform the calculation based on the user's choices
+                if (operationChoice == "1" || operationChoice == "+") {
+                    add();
+                    std::cout << "Result of " << number1 << " + " << number2 << " = " << result << "\n";
+                    break;
+                } else if (operationChoice == "2" || operationChoice == "-") {
+                    subtract();
+                    std::cout << "Result of " << number1 << " - " << number2 << " = " << result << "\n";
+                    break;
+                } else if (operationChoice == "3" || operationChoice == "*") {
+                    multiply();
+                    std::cout << "Result of " << number1 << " * " << number2 << " = " << result << "\n";
+                    break;
+                } else if (operationChoice == "4" || operationChoice == "/") {
+                    divide();
+                    std::cout << "Result of " << number1 << " / " << number2 << " = " << result << "\n";
+                    break;
+                } else if (operationChoice == "5") {
+                    min();
+                    std::cout << "Result of min(" << number1 << ", " << number2 << ") = " << result << "\n";
+                    break;
+                } else if (operationChoice == "6") {
+                    max();
+                    std::cout << "Result of max(" << number1 << ", " << number2 << ") = " << result << "\n";
+                    break;
+                } else {
+                    std::cout << "Invalid operation choice!\n";
+                }
+            } else if (choice == "2") {
+                std::cout << "Skipping this step...\n";
             } else {
-                std::cout << "Invalid operation choice!\n";
+                std::cout << "Invalid choice! Please try again.\n";
             }
-        } else if (choice == "2") {
-            std::cout << "Skipping this step...\n";
-        } else {
-            std::cout << "Invalid choice! Please try again.\n";
-        }
+        }   
     }
 };
 
@@ -438,11 +506,16 @@ public:
     }
 
     void execute() {
+        currentFlowNumberInputs.clear();
         std::cout << "---------------------------\n";
         std::cout << "Executing flow: " << name << "\n";
-        std::cout << "Available steps:\n";
         for (auto step : steps) {
             if (step != nullptr) { // null check
+                if (dynamic_cast<NumberInput*>(step) != nullptr) { // check if current step is a NumberInputStep
+                    NumberInput* numberStep = dynamic_cast<NumberInput*>(step);
+                    // perform operations specific to NumberInputStep
+                    currentFlowNumberInputs.push_back(numberStep);
+                }
                 step->execute();
             }
         }
