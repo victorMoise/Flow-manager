@@ -1,0 +1,20 @@
+ceva texte
+de texte asd
+ceva,test
+123,4325,123
+srtert,12312
+---------------------------
+Calculus Step:
+Number 1: 22
+Number 2: 11
+Result: 33
+---------------------------
+Calculus Step:
+Number 1: 2.95149e-038
+Number 2: 2.9389e-038
+Result: -0.00617302
+---------------------------
+Calculus Step:
+Number 1: 22
+Number 2: 11
+Result: 33

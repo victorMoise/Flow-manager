@@ -20,9 +20,27 @@ public:
     TitleStep(std::string title, std::string subtitle) : title(title), subtitle(subtitle) {}
     TitleStep() : title("NO TITLE"), subtitle("NO SUBTITLE") {}
 
+    std::string getTitle() {
+        return title;
+    }
+
     void displayInfo() {
         std::cout << "Process Title: " << title << "\n";
         std::cout << "Process Subtitle: " << subtitle << "\n";
+    }
+
+    void addInfoToFile(std::string name) {
+        std::ofstream file(name);
+        if (!file.is_open()) {
+            file << "Error opening file: " << name << "\n";
+            return;
+        }
+        
+        file << "---------------------------\n";
+        file << "Title Step:\n";
+        file << "Title: " << title << "\n";
+        file << "Subtitle: " << subtitle << "\n";
+        file.close();
     }
 
     void execute() override {
@@ -78,6 +96,20 @@ public:
         std::cout << "Text: " << copy << "\n";
     }
 
+    void addInfoToFile(std::string name) {
+        std::ofstream file(name);
+        if (!file.is_open()) {
+            file << "Error opening file: " << name << "\n";
+            return;
+        }
+        
+        file << "---------------------------\n";
+        file << "Text Step:\n";
+        file << "Title: " << title << "\n";
+        file << "Copy: " << copy << "\n";
+        file.close();
+    }
+
     void execute() override {
         std::string choice;
         
@@ -126,9 +158,18 @@ public:
     TextInput(std::string description, std::string text) : description(description), text(text) {}
     TextInput() : description("NO DESCRIPTION"), text("NO TEXT") {}
 
-    void displayInfo() {
-        std::cout << "TextInput Description: " << description << "\n";
-        std::cout << "textInput: " << text << "\n";
+    void addInfoToFile(std::string name) {
+        std::ofstream file(name);
+        if (!file.is_open()) {
+            file << "Error opening file: " << name << "\n";
+            return;
+        }
+        
+        file << "---------------------------\n";
+        file << "TextInput Step:\n";
+        file << "Description: " << description << "\n";
+        file << "Text: " << text << "\n";
+        file.close();
     }
 
     void execute() override {
@@ -185,9 +226,17 @@ public:
     NumberInput(std::string description, float number) : description(description), number(number) {}
     NumberInput() : description("NO DESCRIPTION"), number(0) {}
 
-    void displayInfo() {
-        std::cout << "NumberInput Description: " << description << "\n";
-        std::cout << "Number: " << number << "\n";
+    void addInfoToFile(std::string name) {
+        std::ofstream file(name, std::ios::app); // Open the file in append mode
+        if (!file.is_open()) {
+            file << "Error opening file: " << name << "\n";
+            return;
+        }
+        
+        file << "NumberInput Step:\n";
+        file << "Description: " << description << "\n";
+        file << "Number: " << number << "\n";
+        file.close();
     }
 
     void execute() override {
@@ -246,6 +295,7 @@ std::vector<NumberInput*> currentFlowNumberInputs;
 class CalculusStep : public Step {
 private:
     float number1, number2, result;
+    std::string operation;
 
     bool isValidNumber(const std::string& str) {
         // Regular expression for a number
@@ -255,26 +305,32 @@ private:
     }
 
     void add() {
+        operation = "Addition";
         result = number1 + number2;
     }
 
     void subtract() {
+        operation = "Subtraction";
         result = number1 - number2;
     }
 
     void multiply() {
+        operation = "Multiplication";
         result = number1 * number2;
     }
 
     void divide() {
+        operation = "Division";
         result = number1 / number2;
     }
 
     void min() {
+        operation = "Min";
         result = number1 < number2 ? number1 : number2;
     }
 
     void max() {
+        operation = "Max";
         result = number1 > number2 ? number1 : number2;
     }
 public:
@@ -284,8 +340,28 @@ public:
         return result;
     }
 
-    void execute() override {
+    void addInfoToFile(std::string name) {
+        std::ofstream file(name, std::ios::app); // Open the file in append mode
+        if (!file.is_open()) {
+            file << "Error opening file: " << name << "\n";
+            return;
+        }
+        
+        file << "---------------------------\n";
+        file << "Calculus Step:\n";
+        file << "Number 1: " << number1 << "\n";
+        file << "Number 2: " << number2 << "\n";
+        file << "Result: " << result << "\n";
+        file.close();
+    }
 
+    void displayInfoOnScreen() {
+        std::cout << "Result: " << result << "\n";
+        std::cout << "Number 1: " << number1 << "\n";
+        std::cout << "Number 2: " << number2 << "\n";
+    }
+
+    void execute() override {
         bool stepDone = false;
         while (!stepDone) {
             std::cout << "---------------------------\n";
@@ -404,6 +480,8 @@ public:
     }
 };
 
+std::vector<CalculusStep*> currentFlowCalculusSteps;
+
 
 class TextFileStep : public Step {
 private:
@@ -411,6 +489,7 @@ private:
     std::string name = "NOFILE"; // default value
     std::ifstream file;
 public:
+
     TextFileStep() : description("NO DESCRIPTION"), name("NOFILE") {}
     TextFileStep(std::string description, std::string name) : description(description), name(name + ".txt") {
         try {
@@ -524,7 +603,6 @@ public:
 
 std::vector<CsvFileStep*> currentFlowCsvFileSteps;
 
-
 class DisplayStep : public Step {
 private:
     std::string filename;
@@ -601,10 +679,116 @@ public:
     OutputStep(std::string title, std::string description, std::string previousInfo) : title(title), description(description), previousInfo(previousInfo) {}
     OutputStep() : title("NO TITLE"), description("NO DESCRIPTION"), previousInfo("NO PREVIOUS INFO") {}
 
+    void displayContentsOfFile(std::string name, std::string file) {
+        std::ifstream inputFile(name);
+        std::ofstream outputFile(file, std::ios::app); // Open file in append mode
+
+        if (!inputFile.is_open()) {
+            outputFile << "Error opening file: " << name << "\n";
+            return;
+        }
+
+        if (!outputFile.is_open()) {
+            outputFile << "Error opening file: " << file << "\n";
+            return;
+        }
+
+        std::string line;
+        while (std::getline(inputFile, line)) {
+            outputFile << line << "\n";
+        }
+
+        inputFile.close();
+        outputFile.close();
+    }
+
     void execute() override {
-        std::cout << "Process Title: " << title << "\n";
-        std::cout << "Process Description: " << description << "\n";
-        std::cout << "Previous Info: " << previousInfo << "\n";
+        std::string choice;
+        while (true) {
+            std::cout << "---------------------------\n";
+            std::cout << "Running Output Step:\n";
+            std::cout << "1. Run this step\n";
+            std::cout << "2. Skip this step\n";
+            std::cout << "Enter your choice: ";
+            getline(std::cin, choice);
+
+            if (choice == "1") {
+                std::cout << "---------------------------\n";
+                std::cout << "Enter the title of the output: ";
+                getline(std::cin, title);
+                std::cout << "Enter the description of the output: ";
+                getline(std::cin, description);
+
+                std::string prevChoice = "0";
+
+                while (prevChoice != "y" || prevChoice != "Y" || prevChoice != "n" || prevChoice != "N") {
+                    std::cout << "---------------------------\n";
+                    std::cout << "Do you want to display a previous step's info? (y/n): ";
+                    getline(std::cin, prevChoice);
+
+                    if (prevChoice == "y" || prevChoice == "Y") {
+                        std::cout << "---------------------------\n";
+                        std::cout << "Which step do you want to add?\n";
+                        std::cout << "File steps:\n";
+                        std::cout << "Text:\n";
+                        for (int i = 0; i < currentFlowTextFileSteps.size(); i++) {
+                            std::cout << i + 1 << ". " << currentFlowTextFileSteps[i]->getName() << "\n";
+                        }
+                        std::cout << "Csv:\n";
+                        for (int i = 0; i < currentFlowCsvFileSteps.size(); i++) {
+                            std::cout << i + 1 + currentFlowTextFileSteps.size() << ". " << currentFlowCsvFileSteps[i]->getName() << "\n";
+                        }
+
+                        std::cout << "Numbers:\n";
+                        for (int i = 0; i < currentFlowNumberInputs.size(); i++) {
+                            std::cout << i + 1 + currentFlowTextFileSteps.size() + currentFlowCsvFileSteps.size() << ". " << currentFlowNumberInputs[i]->getNumber() << " (" << currentFlowNumberInputs[i]->getDescription() << ")\n";
+                        }
+
+                        std::cout << "Calculus:\n";
+                        for (int i = 0; i < currentFlowCalculusSteps.size(); i++) {
+                            std::cout << i + 1 + currentFlowTextFileSteps.size() + currentFlowCsvFileSteps.size() + currentFlowNumberInputs.size() << ". ";
+                            currentFlowCalculusSteps[i]->displayInfoOnScreen();
+                        }
+                        std::cout << "Enter your choice: ";
+                        std::string fileChoice;
+                        getline(std::cin, fileChoice);
+
+                        if (std::stoi(fileChoice) >= 1 && std::stoi(fileChoice) <= currentFlowTextFileSteps.size()) {
+                            displayContentsOfFile(currentFlowTextFileSteps[std::stoi(fileChoice) - 1]->getName(), title + ".txt");
+                        }
+                        else if (std::stoi(fileChoice) >= currentFlowTextFileSteps.size() + 1 && std::stoi(fileChoice) <= currentFlowTextFileSteps.size() + currentFlowCsvFileSteps.size()) {
+                            displayContentsOfFile(currentFlowCsvFileSteps[std::stoi(fileChoice) - currentFlowTextFileSteps.size() - 1]->getName(), title + ".txt");
+                        }
+                        else if (std::stoi(fileChoice) >= currentFlowTextFileSteps.size() + currentFlowCsvFileSteps.size() + 1 && std::stoi(fileChoice) <= currentFlowTextFileSteps.size() + currentFlowCsvFileSteps.size() + currentFlowNumberInputs.size()) {
+                            currentFlowCalculusSteps[std::stoi(fileChoice) - currentFlowTextFileSteps.size() - currentFlowCsvFileSteps.size() - 1]->addInfoToFile(title + ".txt");
+                        }
+                        else if (std::stoi(fileChoice) >= currentFlowTextFileSteps.size() + currentFlowCsvFileSteps.size() + currentFlowNumberInputs.size() + 1 && std::stoi(fileChoice) <= currentFlowTextFileSteps.size() + currentFlowCsvFileSteps.size() + currentFlowNumberInputs.size() + currentFlowCalculusSteps.size()) {
+                            currentFlowCalculusSteps[std::stoi(fileChoice) - currentFlowTextFileSteps.size() - currentFlowCsvFileSteps.size() - currentFlowNumberInputs.size() - 1]->addInfoToFile(title + ".txt");
+                        }
+                        else {
+                            std::cout << "Invalid choice! Please try again.\n";
+                        }
+                    }
+                    else if (prevChoice == "n" || prevChoice == "N") {
+                        break;
+                    }
+                    else {
+                        std::cout << "Invalid choice! Please try again.\n";
+                    }
+                }
+
+                
+
+                break;
+                
+
+            } else if (choice == "2") {
+                std::cout << "Skipping this step...\n";
+                break;
+            } else {
+                std::cout << "Invalid choice! Please try again.\n";
+            }
+        }
     }
 };
 
@@ -652,6 +836,11 @@ public:
                     // perform operations specific to TextFileStep
                     currentFlowTextFileSteps.push_back(textFileStep);
                 }
+                if (dynamic_cast<CalculusStep*>(step) != nullptr) { // check if current step is a OutputStep
+                    CalculusStep* calculusStep = dynamic_cast<CalculusStep*>(step);
+                    // perform operations specific to OutputStep
+                    currentFlowCalculusSteps.push_back(calculusStep);
+                }
 
                 currentFlowSteps.push_back(step);
                 step->execute();
@@ -672,7 +861,8 @@ int main() {
             std::cout << "---------------------------\n";
             std::cout << "1. Create a new flow\n";
             std::cout << "2. Execute a flow\n";
-            std::cout << "3. Exit\n";
+            std::cout << "3. Delete a flow\n";
+            std::cout << "4. Exit\n";
             std::cout << "Enter your choice: ";
             std::string choice;
             getline(std::cin, choice);
@@ -789,6 +979,30 @@ int main() {
                 }
             }
             else if (choice == "3") {
+                std::cout << "---------------------------\n";
+                std::cout << "Available flows:\n";
+                for (int i = 0; i < flows.size(); i++) {
+                    std::cout << i + 1 << ". " << flows[i]->getName() << "\n";
+                }
+
+                std::cout << "\nEnter your choice: ";
+                std::string flowChoice;
+                getline(std::cin, flowChoice);
+
+                int choice = stoi(flowChoice);
+                if (choice >= 1 && choice <= flows.size()) {
+                    // execute the flow
+                    flows.erase(flows.begin() + choice - 1);
+                    std::cout << "Flow " << flows[choice - 1]->getName() << " deleted successfully!\n";
+                }
+                else {
+                    // Invalid choice, go back to the initial page
+                    std::cout << "Invalid Input, going back...\n";
+                    continue;
+                }
+
+            }
+            else if (choice == "4") {
                 // exit the program
                 std::cout << "Exiting...\n";
                 return 0;
