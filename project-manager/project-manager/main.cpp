@@ -946,16 +946,19 @@ class Flow {
 private:
     std::vector<Step*> steps;
     std::string name;
+    std::string createdDate;
 
 public:
-    Flow(std::string name) : name(name) {}
-
+    Flow(std::string name) : name(name) {
+        // Set the createdDate to the current date and time
+        std::time_t now = std::time(nullptr);
+        createdDate = std::asctime(std::localtime(&now));
+    }
 
     // Adds a step to the flow
     void addStep(Step* step) {
         steps.push_back(step);
     }
-    
 
     // Returns the steps of the flow
     std::vector<Step*> getStep() {
@@ -965,8 +968,11 @@ public:
     std::string getName() {
         return name;
     }
-    
 
+    std::string getCreatedDate() { // Added getCreatedDate method
+        return createdDate;
+    }
+    
     // Executes all steps of the flow
     void execute() {
         clearCurrentSteps(); // clears all previous stored teps
@@ -1127,7 +1133,7 @@ int main() {
 
                 // Display all available flows
                 for (int i = 0; i < flows.size(); i++) {
-                    std::cout << i + 1 << ". " << flows[i]->getName() << "\n";
+                    std::cout << i + 1 << ". " << flows[i]->getName() << ", Created: " << flows[i]->getCreatedDate();
                 }
 
                 // Get the user's choice
@@ -1173,7 +1179,6 @@ int main() {
                     std::cout << "Invalid Input, going back...\n";
                     continue;
                 }
-
             }
             else if (choice == "4") {
                 // Exit the program
