@@ -1265,7 +1265,10 @@ int main() {
                     std::string stepChoice;
                     getline(std::cin, stepChoice);
 
+
                     if (stepChoice == "0") { // Add the flow to the list of flows and exit the loop
+                        // This is basically the end step, didn't need one specifically, so when the user adds the end step
+                        // the execution of the flow just stops
                         flows.push_back(flow);
                         break;
                     }
