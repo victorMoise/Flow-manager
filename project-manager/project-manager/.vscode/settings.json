@@ -57,6 +57,7 @@
         "xutility": "cpp",
         "algorithm": "cpp",
         "optional": "cpp",
-        "regex": "cpp"
+        "regex": "cpp",
+        "sstream": "cpp"
     }
 }

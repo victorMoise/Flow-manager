@@ -7,8 +7,52 @@
 
 // Generic Step class template
 class Step {
+protected:
+    std::vector<int> errors = {0, 0, 0}; // Keeps track of the errors, maximum 3 screens per step
+    int skips = 0; // Keeps track of the skips
+
 public:
+    // Add an error at a given screen (index)
+    void addErrorAtIndex(int index) {
+        errors[index] += 1;
+    }
+
+
+    // Add a skip
+    void addSkip() {
+        skips += 1;
+    }
+
+
+    // Returns the number of errors at a given screen (index)
+    int getErrorsAtIndex(int index) {
+        return errors[index];
+    }
+
+
+    // Returns the total number of errors
+    int totalErrors() {
+        return errors[0] + errors[1] + errors[2];
+    }
+
+
+    // Returns the number of skips
+    int getSkips() {
+        return skips;
+    }
+
+
+    // Displays the number of errors for each screen
+    void displayErrors() {
+        for (int i = 0; i < errors.size(); i++) {
+            std::cout << "Errors on screen " << i + 1 << ": " << errors[i] << "\n";
+        }
+    }
+
+
+    // Virtual functions overriden by the child classes
     virtual void execute() = 0;
+    virtual std::string getStepName() = 0;
 };
 
 
@@ -31,8 +75,15 @@ public:
     TitleStep() : title("NO TITLE"), subtitle("NO SUBTITLE") {} // Default constructor
 
 
+    // Returns the title
     std::string getTitle() {
         return title;
+    }
+
+
+    // Returns the name of the step
+    std::string getStepName() {
+        return "Title Step";
     }
 
 
@@ -83,7 +134,7 @@ public:
                 std::string subtitle;
                 getline(std::cin, subtitle);
 
-                // asign each of the new inputs to it's respective field
+                // Asign each of the new inputs to it's respective field
                 this->title = title;
                 this->subtitle = subtitle;
 
@@ -91,10 +142,12 @@ public:
             }
             else if (choice == "2") { // Skip the step
                 std::cout << "Skipping this step...\n";
+                addSkip();
                 break; // exit and continue with the next step
             } 
             else { // Invalid choice
                 std::cout << "Invalid choice! Please try again.\n";
+                addErrorAtIndex(0); // Error on the first screen
             }
         }
     }
@@ -112,6 +165,12 @@ private:
 public:
     TextStep(std::string title, std::string copy) : title(title), copy(copy) {}
     TextStep() : title("NO TITLE"), copy("NO COPY") {} // Default constructor
+
+
+    // Returns the name of the step
+    std::string getStepName() {
+        return "Text Step";
+    }
 
 
     // Used for testing
@@ -141,7 +200,7 @@ public:
     void execute() override {
         std::string choice;
         
-        // the user can't continue unless he either completes the step
+        // The user can't continue unless he either completes the step
         // or skips it
         while (true) {
             // Display available options
@@ -149,8 +208,10 @@ public:
             std::cout << "Running Text Step:\n";
             std::cout << "1. Run this step\n";
             std::cout << "2. Skip this step\n";
+
             std::cout << "Enter your choice: ";
             getline(std::cin, choice);
+
             if (choice == "1") { // Run the step
                 // Ask the user to input the title and copy (just some text)
                 std::cout << "---------------------------\n";
@@ -161,18 +222,20 @@ public:
                 std::string copy;
                 getline(std::cin, copy);
 
-                // asign each of the new inputs to it's respective field
+                // Asign each of the new inputs to it's respective field
                 this->title = title;
                 this->copy = copy;
 
-                break; // exit and continue with the next step
+                break; // Exit and continue with the next step
             }
             else if (choice == "2") { // Skip the step
                 std::cout << "Skipping this step...\n";
-                break; // exit and continue with the next step
+                addSkip();
+                break; // Exit and continue with the next step
             }
             else { // Invalid choice
                 std::cout << "Invalid choice! Please try again.\n";
+                addErrorAtIndex(0); // Error on the first screen
             }
         }
     }
@@ -189,6 +252,12 @@ private:
 public:
     TextInput(std::string description, std::string text) : description(description), text(text) {}
     TextInput() : description("NO DESCRIPTION"), text("NO TEXT") {} // Default constructor
+
+
+    // Returns the name of the step
+    std::string getStepName() {
+        return "Text Input Step";
+    }
 
 
     // Called inside the output step
@@ -237,10 +306,12 @@ public:
             }
             else if (choice == "2") { // Skip the step
                 std::cout << "Skipping this step...\n";
+                addSkip();
                 break; // exit and continue with the next step
             }
             else { // Invalid choice
                 std::cout << "Invalid choice! Please try again.\n";
+                addErrorAtIndex(0); // Error on the first screen
             }
         }
     }
@@ -258,11 +329,19 @@ public:
     NumberInput() : description("NO DESCRIPTION"), number(0) {} // Default constructor
 
 
+    // Returns the name of the step
+    std::string getStepName() {
+        return "Number Input Step";
+    }
+
+
+    // Returns the number
     float getNumber() {
         return number;
     }
 
 
+    // Returns the description
     std::string getDescription() {
         return description;
     }
@@ -319,6 +398,7 @@ public:
                         validNumber = true;
                     } catch (const std::exception& e) {
                         std::cout << "Invalid number! Please try again.\n";
+                        addErrorAtIndex(1); // Error on the second screen
                     }
                 }
 
@@ -326,10 +406,12 @@ public:
             }
             else if (choice == "2") { // Skip the step
                 std::cout << "Skipping this step...\n";
+                addSkip();
                 break; // exit and continue with the next step
             }
             else { // Invalid choice
                 std::cout << "Invalid choice! Please try again.\n";
+                addErrorAtIndex(0); // Error on the first screen
             }
         }
     }
@@ -401,6 +483,13 @@ public:
     CalculusStep() : number1(0), number2(0), result(0) {} // Default constructor
 
 
+    // Returns the name of the step
+    std::string getStepName() {
+        return "Calculus Step";
+    }
+
+
+    // Returns the result of the operation
     float getResult() {
         return result;
     }
@@ -468,10 +557,12 @@ public:
                         chosenNumberInputIndex1 = std::stoi(chosenNumberInput1Str) - 1;
                         if (chosenNumberInputIndex1 < 0 || chosenNumberInputIndex1 >= currentFlowNumberInputs.size()) {
                             std::cout << "Invalid choice! Please try again.\n";
+                            addErrorAtIndex(1); // Error on the second screen
                         }
                     }
                     else { // The user didn't enter a valid number
                         std::cout << "Invalid choice! Please enter a number.\n";
+                        addErrorAtIndex(1); // Error on the second screen
                     }
                 }
 
@@ -495,10 +586,12 @@ public:
                         chosenNumberInputIndex2 = std::stoi(chosenNumberInput2Str) - 1;
                         if (chosenNumberInputIndex2 < 0 || chosenNumberInputIndex2 >= currentFlowNumberInputs.size()) {
                             std::cout << "Invalid choice! Please try again.\n";
+                            addErrorAtIndex(1); // Error on the second screen
                         }
                     }
                     else { // The user didn't enter a valid number
                         std::cout << "Invalid choice! Please enter a number.\n";
+                        addErrorAtIndex(1); // Error on the second screen
                     }
                 }
 
@@ -557,14 +650,17 @@ public:
                         break;
                     } else {
                         std::cout << "Invalid operation choice!\n";
+                        addErrorAtIndex(2); // Error on the third screen
                     }
                 }
             } else if (choice == "2") { // Skip the step
                 std::cout << "Skipping this step...\n";
+                addSkip();
                 stepDone = true; // Exit and continue with the next step
                 break; 
             } else { // Invalid choice
                 std::cout << "Invalid choice! Please try again.\n";
+                addErrorAtIndex(0); // Error on the first screen
             }
         }   
     }
@@ -595,6 +691,14 @@ public:
         }
     }
 
+
+    // Returns the name of the step
+    std::string getStepName() {
+        return "File Input Step";
+    }
+
+
+    // Returns the name of the file
     std::string getName() {
         return name;
     }
@@ -629,10 +733,12 @@ public:
             }
             else if (choice == "2") { // Skip the step 
                 std::cout << "Skipping this step...\n";
+                addSkip();
                 break; // Exit and continue with the next step
             }
             else { // Invalid choice
                 std::cout << "Invalid choice! Please try again.\n";
+                addErrorAtIndex(0); // Error on the first screen
             }
         }
     }
@@ -666,6 +772,13 @@ public:
     }
 
 
+    // Returns the name of the step
+    std::string getStepName() {
+        return "Csv File Step";
+    }
+
+
+    // Returns the name of the file
     std::string getName() {
         return name;
     }
@@ -700,10 +813,12 @@ public:
             }
             else if (choice == "2") {
                 std::cout << "Skipping this step...\n";
+                addSkip();
                 break; // Exit and continue with the next step
             }
             else { // Invalid choice
                 std::cout << "Invalid choice! Please try again.\n";
+                addErrorAtIndex(0); // Error on the first screen
             }
         }
     }
@@ -718,6 +833,7 @@ std::vector<CsvFileStep*> currentFlowCsvFileSteps;
 class DisplayStep : public Step {
 private:
     std::string filename;
+
 
     // Displays the contents of a file
     void displayContentsOfFile(std::string name) {
@@ -735,6 +851,12 @@ private:
 public:
     DisplayStep(std::string filename) : filename(filename) {}
     DisplayStep() : filename("NOFILE") {} // Default constructor
+
+
+    // Returns the name of the step
+    std::string getStepName() {
+        return "Display Step";
+    }
 
 
     // Main function that gets called when the step is executed
@@ -786,13 +908,16 @@ public:
                     }
                     else { // Invalid choice
                         std::cout << "Invalid choice! Please try again.\n";
+                        addErrorAtIndex(1); // Error on the second screen
                     }
                 }
             } else if (choice == "2") { // Skip the step
                 std::cout << "Skipping this step...\n";
+                addSkip();
                 break;
             } else { // Invalid choice
                 std::cout << "Invalid choice! Please try again.\n";
+                addErrorAtIndex(0); // Error on the first screen
             }
         }
     }
@@ -832,6 +957,12 @@ private:
 public:
     OutputStep(std::string title, std::string description, std::string previousInfo) : title(title), description(description), previousInfo(previousInfo) {}
     OutputStep() : title("NO TITLE"), description("NO DESCRIPTION"), previousInfo("NO PREVIOUS INFO") {} // Default constructor
+
+
+    // Returns the name of the step
+    std::string getStepName() {
+        return "Output Step";
+    }
 
 
     // Main function that gets called when the step is executed
@@ -921,6 +1052,7 @@ public:
                         }
                         else { // Invalid choice
                             std::cout << "Invalid choice! Please try again.\n";
+                            addErrorAtIndex(2); // Error on the third screen
                         }
                     }
                     else if (prevChoice == "n" || prevChoice == "N") { // The user chose not to add any more info
@@ -928,13 +1060,16 @@ public:
                     }
                     else { // Invalid choice
                         std::cout << "Invalid choice! Please try again.\n";
+                        addErrorAtIndex(1); // Error on the second screen
                     }
                 }
             } else if (choice == "2") {
                 std::cout << "Skipping this step...\n";
+                addSkip();
                 break;
             } else {
                 std::cout << "Invalid choice! Please try again.\n";
+                addErrorAtIndex(0); // Error on the first screen
             }
         }
     }
@@ -944,34 +1079,93 @@ public:
 // Flow class
 class Flow {
 private:
+    int started = 0;
     std::vector<Step*> steps;
     std::string name;
     std::string createdDate;
 
 public:
-    Flow(std::string name) : name(name) {
+    Flow(std::string name) : name(name) { // Constructor
         // Set the createdDate to the current date and time
         std::time_t now = std::time(nullptr);
         createdDate = std::asctime(std::localtime(&now));
     }
+
+
+    // Getters and Setters
+    int getStarted() {
+        return started;
+    }
+
+
+    // If a flow is started it cannot be skipped
+    // So the number of times the flow is started is the number of times it wa completed
+    void addStart() {
+        started++;
+    }
+
 
     // Adds a step to the flow
     void addStep(Step* step) {
         steps.push_back(step);
     }
 
+
     // Returns the steps of the flow
     std::vector<Step*> getStep() {
         return steps;
     }
 
+
+    // Returns the name of the flow
     std::string getName() {
         return name;
     }
 
-    std::string getCreatedDate() { // Added getCreatedDate method
+
+    // Returns the date and time when the flow was created
+    std::string getCreatedDate() {
         return createdDate;
     }
+
+
+    // Displays the skips for each step
+    void displaySkips() {
+        std::cout << "---------------------------\n";
+        std::cout << "Skips for each step:\n";
+
+        for (size_t i = 0; i < steps.size(); i++) {
+            // Display the name of the step and the number of times it was skipped
+            std::cout << "Step " << i + 1 << ", " << steps[i]->getStepName() << ": Skipped = " << steps[i]->getSkips() << "\n";
+        }
+    }
+
+
+    // Displays the errors for each step on each screen
+    void displayErrors() {
+        std::cout << "---------------------------\n";
+        std::cout << "Errors for each step:\n";
+        
+        for (size_t i = 0; i < steps.size(); i++) {
+            // Displays the name of the step and the number of times it was skipped
+            std::cout << "Step " << i + 1 << ", " << steps[i]->getStepName() << ":\n";
+            steps[i]->displayErrors();
+        }
+    }
+
+
+    // Displays the average errors for each flow
+    void displayAverageErrors() {
+        int allErrors = 0; // Count all errors from each step
+        for (auto step : steps) {
+            allErrors += step->totalErrors();
+        }
+
+        // Display the average errors per flow started
+        std::cout << "---------------------------\n";
+        std::cout << "Average errors per flow: " << allErrors / steps.size() / started << "\n";
+    }
+
     
     // Executes all steps of the flow
     void execute() {
@@ -1034,7 +1228,8 @@ int main() {
             std::cout << "1. Create a new flow\n";
             std::cout << "2. Execute a flow\n";
             std::cout << "3. Delete a flow\n";
-            std::cout << "4. Exit\n";
+            std::cout << "4. See flow analytics\n";
+            std::cout << "5. Exit\n";
             std::cout << "Enter your choice: ";
             std::string choice;
             getline(std::cin, choice);
@@ -1050,7 +1245,6 @@ int main() {
 
                 Flow* flow = new Flow(name);
                 
-
                 while (true) {
                     // Display all available steps
                     std::cout << "---------------------------\n";
@@ -1145,6 +1339,7 @@ int main() {
                 int choice = stoi(flowChoice);
                 if (choice >= 1 && choice <= flows.size()) {
                     // Execute the flow
+                    flows[choice - 1]->addStart();
                     flows[choice - 1]->execute();
                     clearCurrentSteps();
                 }
@@ -1180,7 +1375,38 @@ int main() {
                     continue;
                 }
             }
-            else if (choice == "4") {
+            else if (choice == "4") { // See flow analytics
+                std::cout << "---------------------------\n";
+                std::cout << "Available flows:\n";
+
+                // Display all available flows
+                for (int i = 0; i < flows.size(); i++) {
+                    std::cout << i + 1 << ". " << flows[i]->getName() << "\n";
+                }
+
+                // Get the user's choice
+                std::cout << "\nEnter your choice: ";
+                std::string flowChoice;
+                getline(std::cin, flowChoice);
+
+                int choice = stoi(flowChoice);
+                if (choice >= 1 && choice <= flows.size()) {
+                    // See start and complete counts
+                    std::cout << "Times started: " << flows[choice - 1]->getStarted() << "\n";
+                    std::cout << "Times completed: " << flows[choice - 1]->getStarted() << "\n";
+
+                    // See skips for each step
+                    flows[choice - 1]->displaySkips();
+                    flows[choice - 1]->displayErrors();
+                    flows[choice - 1]->displayAverageErrors();
+                }
+                else {
+                    // Invalid choice, go back to the initial page
+                    std::cout << "Invalid Input, going back...\n";
+                    continue;
+                }
+
+            } else if (choice == "5") {
                 // Exit the program
                 std::cout << "Exiting...\n";
                 return 0;
