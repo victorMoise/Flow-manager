@@ -1049,7 +1049,7 @@ public:
                         // The user chose a calculus step
                         else if (std::stoi(fileChoice) >= currentFlowTextFileSteps.size() + currentFlowCsvFileSteps.size() + currentFlowNumberInputs.size() + 1 && std::stoi(fileChoice) <= currentFlowTextFileSteps.size() + currentFlowCsvFileSteps.size() + currentFlowNumberInputs.size() + currentFlowCalculusSteps.size()) {
                             currentFlowCalculusSteps[std::stoi(fileChoice) - currentFlowTextFileSteps.size() - currentFlowCsvFileSteps.size() - currentFlowNumberInputs.size() - 1]->addInfoToFile(title + ".txt");
-                        }
+                        } 
                         else { // Invalid choice
                             std::cout << "Invalid choice! Please try again.\n";
                             addErrorAtIndex(2); // Error on the third screen
@@ -1249,15 +1249,15 @@ int main() {
                     // Display all available steps
                     std::cout << "---------------------------\n";
                     std::cout << "Available steps:\n";
-                    std::cout << "1. Title\n";
-                    std::cout << "2. Text\n";
-                    std::cout << "3. TextInput\n";
-                    std::cout << "4. NumberInput\n";
-                    std::cout << "5. Calculus\n";
-                    std::cout << "6. TextFile\n";
-                    std::cout << "7. CsvFile\n";
-                    std::cout << "8. Display\n";
-                    std::cout << "9. Output\n";
+                    std::cout << "1. Title: title (string), subtitle (string)\n";
+                    std::cout << "2. Text: title (string), copy (string)\n";
+                    std::cout << "3. TextInput: description (string), text input (string)\n";
+                    std::cout << "4. NumberInput: description (string), number input (string)\n";
+                    std::cout << "5. Calculus: steps (integer), operation (string)\n";
+                    std::cout << "6. TextFile: description(string), filename(string)\n";
+                    std::cout << "7. CsvFile: description(string), filename(string)\n";
+                    std::cout << "8. Display: step (intger)\n";
+                    std::cout << "9. Output: step(integer), filename(string), title (string), description (string)\n";
                     std::cout << "0. End\n";
                     std::cout << "Enter your choice: ";
 
