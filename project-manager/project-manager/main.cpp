@@ -11,6 +11,19 @@ protected:
     std::vector<int> errors = {0, 0, 0}; // Keeps track of the errors, maximum 3 screens per step
     int skips = 0; // Keeps track of the skips
 
+    // Displays the contents of a file
+    void displayContentsOfFile(std::string name) {
+        std::ifstream file(name);
+        if (!file.is_open()) {
+            std::cout << "Error opening file: " << name << "\n";
+            return;
+        }
+        std::string line;
+        while (std::getline(file, line)) {
+            std::cout << line << "\n";
+        }
+    }
+
 public:
     // Add an error at a given screen (index)
     void addErrorAtIndex(int index) {
@@ -53,6 +66,8 @@ public:
     // Virtual functions overriden by the child classes
     virtual void execute() = 0;
     virtual std::string getStepName() = 0;
+    virtual void displayInfoOnScreen() = 0;
+    virtual void addInfoToFile(std::string name) = 0;
 };
 
 
@@ -94,9 +109,14 @@ public:
     }
 
 
+    void displayInfoOnScreen() {
+        std::cout << "Title Step -> Title: " << title << ", Subtitle: " << subtitle << "\n";
+    }
+
+
     // Called inside the output step
     void addInfoToFile(std::string name) {
-        std::ofstream file(name);
+        std::ofstream file(name, std::ios::app); // Open the file in append mode
         if (!file.is_open()) {
             file << "Error opening file: " << name << "\n";
             return;
@@ -180,9 +200,14 @@ public:
     }
 
 
+    void displayInfoOnScreen() {
+        std::cout << "Text Step -> Title: " << title << ", Copy: " << copy << "\n";
+    }
+
+
     // Called inside the output step
     void addInfoToFile(std::string name) {
-        std::ofstream file(name);
+        std::ofstream file(name, std::ios::app); // Open the file in append mode
         if (!file.is_open()) {
             file << "Error opening file: " << name << "\n";
             return;
@@ -260,9 +285,14 @@ public:
     }
 
 
+    void displayInfoOnScreen() {
+        std::cout << "Text Input Step -> Description: " << description << ", Text: " << text << "\n";
+    }
+
+
     // Called inside the output step
     void addInfoToFile(std::string name) {
-        std::ofstream file(name);
+        std::ofstream file(name, std::ios::app); // Open the file in append mode
         if (!file.is_open()) {
             file << "Error opening file: " << name << "\n";
             return;
@@ -347,6 +377,11 @@ public:
     }
 
 
+    void displayInfoOnScreen() {
+        std::cout << "Number Input Step -> Description: " << description << ", Number: " << number << "\n";
+    }
+
+
     // Called inside the output step
     void addInfoToFile(std::string name) {
         std::ofstream file(name, std::ios::app); // Open the file in append mode
@@ -355,6 +390,7 @@ public:
             return;
         }
         
+        file << "---------------------------\n";
         file << "NumberInput Step:\n";
         file << "Description: " << description << "\n";
         file << "Number: " << number << "\n";
@@ -495,6 +531,11 @@ public:
     }
 
 
+    void displayInfoOnScreen() {
+        std::cout << "Calculus Step -> Number 1: " << number1 << ", Number 2: " << number2 << ", Result: " << result << "\n";
+    }
+
+
     // Called inside the output step
     void addInfoToFile(std::string name) {
         std::ofstream file(name, std::ios::app); // Open the file in append mode
@@ -509,14 +550,6 @@ public:
         file << "Number 2: " << number2 << "\n";
         file << "Result: " << result << "\n";
         file.close();
-    }
-
-
-    // Used for testing
-    void displayInfoOnScreen() {
-        std::cout << "Result: " << result << "\n";
-        std::cout << "Number 1: " << number1 << "\n";
-        std::cout << "Number 2: " << number2 << "\n";
     }
 
 
@@ -704,6 +737,28 @@ public:
     }
 
 
+    void displayInfoOnScreen() {
+        std::cout << "TextFile Step -> Description: " << description << ", Name: " << name << "\n";
+    }
+
+
+    void addInfoToFile(std::string name) {
+        std::ofstream file(name, std::ios::app); // Open the file in append mode
+        if (!file.is_open()) {
+            file << "Error opening file: " << name << "\n";
+            return;
+        }
+        
+        file << "---------------------------\n";
+        file << "TextFile Step:\n";
+        file << "Description: " << description << "\n";
+        file << "Name: " << name << "\n";
+        file << "Contents:\n";
+        displayContentsOfFile(this->name);
+        file.close();
+    }
+
+
     // Main function that gets called when the step is executed
     void execute() override {
         std::string choice = "0";
@@ -784,6 +839,28 @@ public:
     }
 
 
+    void displayInfoOnScreen() {
+        std::cout << "CsvFile Step -> Description: " << description << ", Name: " << name << "\n";
+    }
+
+
+    void addInfoToFile(std::string name) {
+        std::ofstream file(name, std::ios::app); // Open the file in append mode
+        if (!file.is_open()) {
+            file << "Error opening file: " << name << "\n";
+            return;
+        }
+        
+        file << "---------------------------\n";
+        file << "CsvFile Step:\n";
+        file << "Description: " << description << "\n";
+        file << "Name: " << name << "\n";
+        file << "Contents:\n";
+        displayContentsOfFile(this->name);
+        file.close();
+    }
+
+
     // Main function that gets called when the step is executed
     void execute() override {
         std::string choice = "0";
@@ -834,20 +911,6 @@ class DisplayStep : public Step {
 private:
     std::string filename;
 
-
-    // Displays the contents of a file
-    void displayContentsOfFile(std::string name) {
-        std::ifstream file(name);
-        if (!file.is_open()) {
-            std::cout << "Error opening file: " << name << "\n";
-            return;
-        }
-        std::string line;
-        while (std::getline(file, line)) {
-            std::cout << line << "\n";
-        }
-    }
-
 public:
     DisplayStep(std::string filename) : filename(filename) {}
     DisplayStep() : filename("NOFILE") {} // Default constructor
@@ -856,6 +919,16 @@ public:
     // Returns the name of the step
     std::string getStepName() {
         return "Display Step";
+    }
+
+
+    void displayInfoOnScreen() {
+        std::cout << "Display Step -> Filename: " << filename << "\n";
+    }
+
+
+    void addInfoToFile(std::string name) {
+        return;
     }
 
 
@@ -965,6 +1038,17 @@ public:
     }
 
 
+    // Don't really need this
+    void displayInfoOnScreen() {
+        return;
+    }
+
+
+    void addInfoToFile(std::string filename) {
+        return;
+    }
+
+
     // Main function that gets called when the step is executed
     void execute() override {
         std::string choice;
@@ -1002,58 +1086,32 @@ public:
                         std::cout << "File steps:\n";
 
                         // Display a list of available TextFileStep objects and let the user choose
-                        std::cout << "Text:\n";
-                        for (int i = 0; i < currentFlowTextFileSteps.size(); i++) {
-                            std::cout << i + 1 << ". " << currentFlowTextFileSteps[i]->getName() << "\n";
-                        }
-
-                        // Display a list of available CsvFileStep objects and let the user choose
-                        std::cout << "Csv:\n";
-                        for (int i = 0; i < currentFlowCsvFileSteps.size(); i++) {
-                            std::cout << i + 1 + currentFlowTextFileSteps.size() << ". " << currentFlowCsvFileSteps[i]->getName() << "\n";
-                        }
-
-                        // Display a list of available NumberInputStep objects and let the user choose
-                        std::cout << "Numbers:\n";
-                        for (int i = 0; i < currentFlowNumberInputs.size(); i++) {
-                            std::cout << i + 1 + currentFlowTextFileSteps.size() + currentFlowCsvFileSteps.size() << ". " << currentFlowNumberInputs[i]->getNumber() << " (" << currentFlowNumberInputs[i]->getDescription() << ")\n";
-                        }
-
-                        // Display a list of available CalculusStep objects and let the user choose
-                        std::cout << "Calculus:\n";
-                        for (int i = 0; i < currentFlowCalculusSteps.size(); i++) {
-                            std::cout << i + 1 + currentFlowTextFileSteps.size() + currentFlowCsvFileSteps.size() + currentFlowNumberInputs.size() << ". ";
-                            currentFlowCalculusSteps[i]->displayInfoOnScreen();
+                        for (int i = 0; i < currentFlowSteps.size() - 1; i++) {
+                            std::cout << i + 1 << ". ";
+                            currentFlowSteps[i]->displayInfoOnScreen();
                         }
 
                         // Get the user's choice
-                        std::cout << "Enter your choice: ";
-                        std::string fileChoice;
-                        getline(std::cin, fileChoice);
+                        std::cout << "\nEnter your choice: ";
+                        std::string stepChoice;
+                        getline(std::cin, stepChoice);
 
-                        // The user chose a text file
-                        if (std::stoi(fileChoice) >= 1 && std::stoi(fileChoice) <= currentFlowTextFileSteps.size()) {
-                            displayContentsOfFile(currentFlowTextFileSteps[std::stoi(fileChoice) - 1]->getName(), title + ".txt");
-                        }
-
-                        // The user chose a csv file
-                        else if (std::stoi(fileChoice) >= currentFlowTextFileSteps.size() + 1 && std::stoi(fileChoice) <= currentFlowTextFileSteps.size() + currentFlowCsvFileSteps.size()) {
-                            displayContentsOfFile(currentFlowCsvFileSteps[std::stoi(fileChoice) - currentFlowTextFileSteps.size() - 1]->getName(), title + ".txt");
-                        }
-
-                        // The user chose a number step
-                        else if (std::stoi(fileChoice) >= currentFlowTextFileSteps.size() + currentFlowCsvFileSteps.size() + 1 && std::stoi(fileChoice) <= currentFlowTextFileSteps.size() + currentFlowCsvFileSteps.size() + currentFlowNumberInputs.size()) {
-                            currentFlowCalculusSteps[std::stoi(fileChoice) - currentFlowTextFileSteps.size() - currentFlowCsvFileSteps.size() - 1]->addInfoToFile(title + ".txt");
-                        }
-
-                        // The user chose a calculus step
-                        else if (std::stoi(fileChoice) >= currentFlowTextFileSteps.size() + currentFlowCsvFileSteps.size() + currentFlowNumberInputs.size() + 1 && std::stoi(fileChoice) <= currentFlowTextFileSteps.size() + currentFlowCsvFileSteps.size() + currentFlowNumberInputs.size() + currentFlowCalculusSteps.size()) {
-                            currentFlowCalculusSteps[std::stoi(fileChoice) - currentFlowTextFileSteps.size() - currentFlowCsvFileSteps.size() - currentFlowNumberInputs.size() - 1]->addInfoToFile(title + ".txt");
-                        } 
-                        else { // Invalid choice
+                        try {
+                            // verify that the user entered a valid number and within acceptable range
+                            if (stoi(stepChoice) >= 1 && stoi(stepChoice) <= currentFlowSteps.size()) { 
+                                // Add the info from the chosen step to the output file
+                                currentFlowSteps[stoi(stepChoice) - 1]->addInfoToFile(title + ".txt");
+                            }
+                            else { // Invalid choice
+                                std::cout << "Invalid choice! Please try again.\n";
+                                addErrorAtIndex(2); // Error on the second screen
+                            }
+                        } catch (const std::exception& e) {
                             std::cout << "Invalid choice! Please try again.\n";
-                            addErrorAtIndex(2); // Error on the third screen
+                            addErrorAtIndex(2); // Error on the second screen
                         }
+
+                        return; // Exit and continue with the next step
                     }
                     else if (prevChoice == "n" || prevChoice == "N") { // The user chose not to add any more info
                         break;

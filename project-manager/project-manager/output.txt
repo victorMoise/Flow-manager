@@ -1,0 +1,31 @@
+---------------------------
+Title Step:
+Title: mihai flow
+Subtitle: mihai subtitle
+---------------------------
+TextInput Step:
+Description: text input
+Text: text input content
+---------------------------
+NumberInput Step:
+Description: sdfgsdfg
+Number: 111
+---------------------------
+NumberInput Step:
+Description: dsfgdsfg
+Number: 222
+---------------------------
+Calculus Step:
+Number 1: 111
+Number 2: 222
+Result: 333
+---------------------------
+CsvFile Step:
+Description: filetext
+Name: output.txt
+Contents:
+---------------------------
+TextFile Step:
+Description: textfile descripiton
+Name: output.txt
+Contents:
