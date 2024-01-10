@@ -104,18 +104,6 @@ public:
     }
 
 
-    // Setter for the subtitle
-    std::string setSubtitle(std::string subtitle) {
-        this->subtitle = subtitle;
-    }
-
-
-    // Setter for the title
-    std::string setTitle(std::string title) {
-        this->title = title;
-    }
-
-
     // Displays the title and subtitle on the screen
     void displayInfoOnScreen() {
         std::cout << "Title Step -> Title: " << title << ", Subtitle: " << subtitle << "\n";
@@ -155,8 +143,16 @@ public:
             if (choice == "1") { // Run the step
                 // Ask the user to input the title and subtitle
                 std::cout << "---------------------------\n";
-                std::cout << "Title: " << title << "\n";
-                std::cout << "Subtitle: " << subtitle << "\n";
+                std::cout << "Title: ";
+                std::string title;
+                getline(std::cin, title);
+                std::cout << "Subtitle: ";
+                std::string subtitle;
+                getline(std::cin, subtitle);
+
+                // Asign each of the new inputs to it's respective field
+                this->title = title;
+                this->subtitle = subtitle;
 
                 break; // Exit and continue to the next step
             } else if (choice == "2") { // Skip the step
@@ -1331,18 +1327,7 @@ int main() {
                         flows.push_back(flow);
                         break;
                     } else if (stepChoice == "1") { // Create and add a new TitleStep
-                        // Ask the user to input the title and subtitle
-                        std::cout << "---------------------------\n";
-                        std::cout << "Creating title step:\n";
-                        std::cout << "Title: ";
-                        std::string title;
-                        getline(std::cin, title);
-                        std::cout << "Subtitle: ";
-                        std::string subtitle;
-                        getline(std::cin, subtitle);
-
-                        // Create the step and add it to the flow
-                        Step* step = new TitleStep(title, subtitle);
+                        Step* step = new TitleStep();
                         flow->addStep(step);
                         std::cout << "Title added successfully!\n";
                     } else if (stepChoice == "2") { // Create and add a new TextStep
