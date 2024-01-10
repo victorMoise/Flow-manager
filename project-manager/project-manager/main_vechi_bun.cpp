@@ -7,12 +7,11 @@
 
 // Generic Step class template
 class Step {
-private:
+protected:
     // Stores the number of errors for each screen, no step has more than 3 screens
-    int errors[3] = {0, 0, 0};
+    std::vector<int> errors;
     int skips = 0; // Keeps track of the skips
 
-protected:
     // Displays the contents of a file
     void displayContentsOfFile(std::string name) {
         std::ifstream file(name);
@@ -59,7 +58,7 @@ public:
 
     // Displays the number of errors for each screen
     void displayErrors() {
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < errors.size(); i++) {
             std::cout << "Errors on screen " << i + 1 << ": " << errors[i] << "\n";
         }
     }
@@ -332,12 +331,11 @@ public:
 };
 
 
-template <typename T>
 // NumberInput class
 class NumberInput : public Step {
 private:
     std::string description;
-    T number;
+    float number;
 
 public:
     NumberInput(std::string description, float number) : description(description), number(number) {}
@@ -351,7 +349,7 @@ public:
 
 
     // Returns the number
-    T getNumber() {
+    float getNumber() {
         return number;
     }
 
@@ -440,7 +438,7 @@ public:
 
 
 // Stores all NumberInputStep objects of the current flow
-std::vector<NumberInput<float>*> currentFlowNumberInputs;
+std::vector<NumberInput*> currentFlowNumberInputs;
 
 
 // CalculusStep class
@@ -1192,14 +1190,6 @@ public:
     }
 
 
-    // Displays starts and completes
-    void displayStartAndCompletes() {
-        std::cout << "---------------------------\n";
-        std::cout << "Started: " << started << "\n";
-        std::cout << "Completed: " << started << "\n";
-    }
-
-
     // Displays the average errors for each flow
     void displayAverageErrors() {
         int allErrors = 0; // Count all errors from each step
@@ -1222,8 +1212,8 @@ public:
         // 
         for (auto step : steps) {
             if (step != nullptr) { // null check
-                if (dynamic_cast<NumberInput<float>*>(step) != nullptr) { // Check if current step is a NumberInputStep
-                    NumberInput<float>* numberStep = dynamic_cast<NumberInput<float>*>(step);
+                if (dynamic_cast<NumberInput*>(step) != nullptr) { // Check if current step is a NumberInputStep
+                    NumberInput* numberStep = dynamic_cast<NumberInput*>(step);
                     // Add the step to the list of NumberInputStep objects
                     currentFlowNumberInputs.push_back(numberStep);
                 }
@@ -1252,11 +1242,6 @@ public:
             }
         }
 
-        // Display a confirmation that the flow was executed
-        std::cout << "---------------------------\n";
-        std::cout << "Flow execution is done!\n";
-        std::cout << "Going back to the start page.\n";
-        
         // To be sure the previous steps are cleared, I clear it again
         currentFlowNumberInputs.clear();
     }
@@ -1339,7 +1324,7 @@ int main() {
                         flow->addStep(step);
                         std::cout << "TextInput added successfully!\n";
                     } else if (stepChoice == "4") { // Create and add a new NumberInput
-                        Step* step = new NumberInput<float>();
+                        Step* step = new NumberInput();
                         flow->addStep(step);
                         std::cout << "Number added successfully!\n";
                     } else if (stepChoice == "5") { // Create and add a new CalculusStep
@@ -1447,16 +1432,13 @@ int main() {
                 try {
                     int choice = stoi(flowChoice);
                     if (choice >= 1 && choice <= flows.size()) {
-                        // Display starts and completes counters
-                        flows[choice - 1]->displayStartAndCompletes();
+                        // See start and complete counts
+                        std::cout << "Times started: " << flows[choice - 1]->getStarted() << "\n";
+                        std::cout << "Times completed: " << flows[choice - 1]->getStarted() << "\n";
 
-                        // Display skips for each step
+                        // See skips for each step
                         flows[choice - 1]->displaySkips();
-
-                        // Display errors for each step
                         flows[choice - 1]->displayErrors();
-
-                        // Display average errors for each flow
                         flows[choice - 1]->displayAverageErrors();
                     } else {
                         // Invalid choice, go back to the initial page
