@@ -26,6 +26,28 @@ protected:
         }
     }
 
+    void addContentsFromFirstFileToSecond(std::string first, std::string second) {
+        std::ifstream file(first); // Open for reading
+        if (!file.is_open()) {
+            std::cout << "Error opening file: " << first << "\n";
+            return;
+        }
+        
+        std::ofstream file2(second, std::ios::app); // Open for appending
+        if (!file2.is_open()) {
+            std::cout << "Error opening file: " << second << "\n";
+            return;
+        }
+        
+        std::string line;
+        while (std::getline(file, line)) {
+            file2 << line << "\n";
+        }
+
+        file.close();
+        file2.close();
+    }
+
 public:
     // Add an error at a given screen (index)
     void addErrorAtIndex(int index) {
@@ -174,7 +196,7 @@ public:
             if (choice == "1") { // Run the step
                 // Ask the user to input the title and subtitle
                 std::cout << "---------------------------\n";
-                std::cout << "Running Title Ttep:\n";
+                std::cout << "Running Title Step:\n";
                 std::cout << "Title: " << title << "\n";
                 std::cout << "Subtitle: " << subtitle << "\n";
 
@@ -209,12 +231,12 @@ public:
         std::cout << "Creaging text step:\n";
 
         // Get the title
-        std::cout << "Title: ";
+        std::cout << "Text Title: ";
         std::string title;
         getline(std::cin, title);
         
         // Get the copy (just some string text)
-        std::cout << "Copy: ";
+        std::cout << "Text Copy: ";
         std::string copy;
         getline(std::cin, copy);
 
@@ -246,8 +268,8 @@ public:
         
         file << "---------------------------\n";
         file << "Text Step:\n";
-        file << "Title: " << title << "\n";
-        file << "Copy: " << copy << "\n";
+        file << "Text Title: " << title << "\n";
+        file << "Text Copy: " << copy << "\n";
         file.close();
     }
 
@@ -272,8 +294,8 @@ public:
                 // Ask the user to input the title and copy (just some text)
                 std::cout << "---------------------------\n";
                 std::cout << "Running Text Step:\n";
-                std::cout << "Title: " << title << "\n";
-                std::cout << "Copy: " << copy << "\n";
+                std::cout << "Text Title: " << title << "\n";
+                std::cout << "Text Copy: " << copy << "\n";
 
                 break; // Exit and continue with the next step
             } else if (choice == "2") { // Skip the step
@@ -304,7 +326,7 @@ public:
         std::cout << "Creating text input step:\n";
 
         // Get the description
-        std::cout << "Description: ";
+        std::cout << "Text Input Description: ";
         std::string description;
         getline(std::cin, description);
 
@@ -334,9 +356,9 @@ public:
         }
         
         file << "---------------------------\n";
-        file << "TextInput Step:\n";
-        file << "Description: " << description << "\n";
-        file << "Text: " << text << "\n";
+        file << "Text Input Step:\n";
+        file << "Text Description: " << description << "\n";
+        file << "Text Input: " << text << "\n";
         file.close();
     }
 
@@ -359,7 +381,7 @@ public:
                 // Ask the user to input the description and text
                 std::cout << "---------------------------\n";
                 std::cout << "Running Text Input Step:\n";
-                std::cout << "Description: " << description << "\n";
+                std::cout << "Text Input Description: " << description << "\n";
                 std::cout << "Enter your Text: ";
                 std::string text;
                 getline(std::cin, text);
@@ -393,10 +415,10 @@ public:
     NumberInput(std::string description) : description(description), number(0) {}
     NumberInput() {
         std::cout << "---------------------------\n";
-        std::cout << "Creating number input step:\n";
+        std::cout << "Creating Number Input Step:\n";
 
         // Get the description
-        std::cout << "Description: ";
+        std::cout << "Number Description: ";
         std::string description;
         getline(std::cin, description);
 
@@ -466,7 +488,7 @@ public:
                 // Ask the user to input the description and number
                 std::cout << "---------------------------\n";
                 std::cout << "Running Number Input Step:\n";
-                std::cout << "Description: " << description << "\n";
+                std::cout << "Number Description: " << description << "\n";
 
                 bool validNumber = false;
 
@@ -755,7 +777,20 @@ private:
     std::ifstream file;
 
 public:
-    TextFileStep() : description("NO DESCRIPTION"), name("NOFILE") {} // Default constructor
+    TextFileStep() {
+        std::cout << "---------------------------\n";
+        std::cout << "Creating Text File Step:\n";
+
+        // Get the description
+        std::cout << "Text File Description: ";
+        std::string description;
+        getline(std::cin, description);
+
+        // Assign the input to it's respective field
+        this->description = description;
+    }
+
+
     TextFileStep(std::string description, std::string name) : description(description), name(name + ".txt") {
         try {
             file.open(this->name);
@@ -796,11 +831,12 @@ public:
         
         file << "---------------------------\n";
         file << "TextFile Step:\n";
-        file << "Description: " << description << "\n";
-        file << "Name: " << name << "\n";
+        file << "Text File Description: " << this->description << "\n";
+        file << "File Name: " << this->name << "\n";
         file << "Contents:\n";
-        displayContentsOfFile(this->name);
         file.close();
+
+        addContentsFromFirstFileToSecond(this->name, name);
     }
 
 
@@ -811,7 +847,7 @@ public:
         while (choice != "1" || choice != "2") {
             // Display available options
             std::cout << "---------------------------\n";
-            std::cout << "Running TextFile Step:\n";
+            std::cout << "Executing Text File Step:\n";
             std::cout << "1. Run this step\n";
             std::cout << "2. Skip this step\n";
 
@@ -819,16 +855,26 @@ public:
             std::cout << "Enter your choice: ";
             getline(std::cin, choice);
 
-            std::string filename, description;
+            std::string filename;
 
             if (choice == "1") { // Run the step
-                std::cout << "Enter File Description: ";
-                getline(std::cin, description);
-                std::cout << "Enter File Name: ";
-                getline(std::cin, name);
+                while (true) {
+                    std::cout << "---------------------------\n";
+                    std::cout << "Running Text File Step:\n";
+                    std::cout << "File description: " << description << "\n";
 
-                this->description = description;
-                this->name = name + ".txt";
+                    std::cout << "Enter File Name: ";
+                    std::string filename;
+                    getline(std::cin, filename);
+
+                    if (!fopen((filename + ".txt").c_str(), "r")) { // Check if the file exists
+                        std::cout << "File not found! Please try again.\n";
+                        addErrorAtIndex(1); // Error on the second screen
+                    } else {
+                        this->name = filename + ".txt";
+                        break;
+                    }
+                }
 
                 return; // Exit and continue with the next step
             } else if (choice == "2") { // Skip the step 
@@ -857,7 +903,20 @@ private:
 
 public:
     // Default constructor is called when creating the flow
-    CsvFileStep() : description("NO DESCRIPTION"), name("NOFILE") {} // Default constructor
+    CsvFileStep() {
+        std::cout << "---------------------------\n";
+        std::cout << "Creating Csv File Step:\n";
+
+        // Get the description
+        std::cout << "Csv File Description: ";
+        std::string description;
+        getline(std::cin, description);
+
+        // Assign the input to it's respective field
+        this->description = description;
+    }
+
+
     CsvFileStep(std::string description, std::string name) : description(description), name(name + ".csv") {
         try {
             file.open(this->name);
@@ -902,7 +961,7 @@ public:
         file << "Description: " << description << "\n";
         file << "Name: " << name << "\n";
         file << "Contents:\n";
-        displayContentsOfFile(this->name);
+        addContentsFromFirstFileToSecond(this->name, name); // Add the contents of the csv file to the output file
         file.close();
     }
 
@@ -921,16 +980,24 @@ public:
             std::cout << "Enter your choice: ";
             getline(std::cin, choice);
 
-            std::string filename, description;
-
             if (choice == "1") { // Run the step
-                std::cout << "Enter File Description: ";
-                getline(std::cin, description);
-                std::cout << "Enter File Name: ";
-                getline(std::cin, name);
+                while (true) {
+                    std::cout << "---------------------------\n";
+                    std::cout << "Running CsvFile Step:\n";
+                    std::cout << "File description: " << description << "\n";
 
-                this->description = description;
-                this->name = name + ".csv";
+                    std::cout << "Enter File Name: ";
+                    std::string filename;
+                    getline(std::cin, filename);
+
+                    if (!fopen((filename + ".csv").c_str(), "r")) { // Check if the file exists
+                        std::cout << "File not found! Please try again.\n";
+                        addErrorAtIndex(1); // Error on the second screen
+                    } else {
+                        this->name = filename + ".csv";
+                        break;
+                    }
+                }
 
                 return; // Exit and continue with the next step
             } else if (choice == "2") {
@@ -1089,9 +1156,22 @@ public:
     }
 
 
-    // Don't really need this, it just had to be defined
-    void addInfoToFile(std::string filename) {
+    // Don't really need this
+    void addInfoToFile(std::string name) {
         return;
+    }
+
+
+    // Don't really need this, it just had to be defined
+    void AddDescriptionToFile(std::string name) {
+        std::ofstream file(name, std::ios::app); // Open the file in append mode
+        if (!file.is_open()) {
+            file << "Error opening file: " << name << "\n";
+            return;
+        }
+        
+        file << this->description;
+        file.close();
     }
 
 
@@ -1116,6 +1196,9 @@ public:
                 getline(std::cin, title);
                 std::cout << "Enter the description of the output: ";
                 getline(std::cin, description);
+                this->description = description + "\n";
+
+                AddDescriptionToFile(title + ".txt"); // Add the description to the output file
 
                 std::string prevChoice = "0";
 
@@ -1129,7 +1212,6 @@ public:
                     if (prevChoice == "y" || prevChoice == "Y") {
                         std::cout << "---------------------------\n";
                         std::cout << "Which step do you want to add?\n";
-                        std::cout << "File steps:\n";
 
                         // Display a list of available TextFileStep objects and let the user choose
                         for (int i = 0; i < currentFlowSteps.size() - 1; i++) {
@@ -1155,10 +1237,8 @@ public:
                             std::cout << "Invalid choice! Please try again.\n";
                             addErrorAtIndex(2); // Error on the second screen
                         }
-
-                        return; // Exit and continue with the next step
                     } else if (prevChoice == "n" || prevChoice == "N") { // The user chose not to add any more info
-                        break;
+                        return;
                     } else { // Invalid choice
                         std::cout << "Invalid choice! Please try again.\n";
                         addErrorAtIndex(1); // Error on the second screen
@@ -1303,7 +1383,7 @@ public:
                     currentFlowTextFileSteps.push_back(textFileStep);
                 }
 
-                if (dynamic_cast<CalculusStep*>(step) != nullptr) { // Check if current step is a OutputStep
+                if (dynamic_cast<CalculusStep*>(step) != nullptr) { // Check if current step is a CalculusStep
                     CalculusStep* calculusStep = dynamic_cast<CalculusStep*>(step);
                     // Add the step to the list of CalculusStep objects
                     currentFlowCalculusSteps.push_back(calculusStep);
@@ -1316,6 +1396,7 @@ public:
         }
 
         // Display a confirmation that the flow was executed
+        std::cout << "---------------------------\n";
         std::cout << "---------------------------\n";
         std::cout << "Flow execution is done!\n";
         std::cout << "Going back to the start page.\n";

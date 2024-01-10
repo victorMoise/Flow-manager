@@ -1,31 +1,42 @@
+output file description
 ---------------------------
 Title Step:
-Title: mihai flow
-Subtitle: mihai subtitle
+Title: title 
+Subtitle: subtitle
 ---------------------------
-TextInput Step:
-Description: text input
-Text: text input content
+Text Step:
+Text Title: text title
+Text Copy: text copy
+---------------------------
+Text Input Step:
+Text Description: text input description
+Text Input: this is my inputted text
 ---------------------------
 NumberInput Step:
-Description: sdfgsdfg
-Number: 111
+Description: number 1 description
+Number: 1234
 ---------------------------
 NumberInput Step:
-Description: dsfgdsfg
-Number: 222
+Description: number 2 description
+Number: 5432
 ---------------------------
 Calculus Step:
-Number 1: 111
-Number 2: 222
-Result: 333
----------------------------
-CsvFile Step:
-Description: filetext
-Name: output.txt
-Contents:
+Number 1: 5432
+Number 2: 1234
+Operation: Division
+Result: 4.40195
 ---------------------------
 TextFile Step:
-Description: textfile descripiton
+Text File Description: text file description
+File Name: test.txt
+Contents:
+ceva texte
+de texte asd
+ceva,test
+123,4325,123
+srtert,12312
+---------------------------
+CsvFile Step:
+Description: csv file description
 Name: output.txt
 Contents:
