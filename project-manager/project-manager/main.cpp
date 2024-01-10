@@ -82,14 +82,33 @@ void clearCurrentSteps();
 
 
 // TitleStep class
+// Title and subtitle are inputted when the object is created
 class TitleStep : public Step {
 private:
-    std::string title;
-    std::string subtitle;
+    std::string title = "NO TITLE";
+    std::string subtitle = "NO SUBTITLE";
 
 public:
     TitleStep(std::string title, std::string subtitle) : title(title), subtitle(subtitle) {}
-    TitleStep() : title("NO TITLE"), subtitle("NO SUBTITLE") {} // Default constructor
+
+    TitleStep() { // Default constructor
+        std::cout << "---------------------------\n";
+        std::cout << "Creating title step:\n";
+
+        // Get the title
+        std::cout << "Title: ";
+        std::string title;
+        getline(std::cin, title);
+
+        // Get the subtitle
+        std::cout << "Subtitle: ";
+        std::string subtitle;
+        getline(std::cin, subtitle);
+
+        // Assign the input to it's respective field
+        this->title = title;
+        this->subtitle = subtitle;
+    } 
 
 
     // Returns the title
@@ -147,7 +166,7 @@ public:
         while (true) {
             // Display available options
             std::cout << "---------------------------\n";
-            std::cout << "Running Title Step:\n";
+            std::cout << "Executing Title Step:\n";
             std::cout << "1. Run this step\n";
             std::cout << "2. Skip this step\n";
             std::cout << "Enter your choice: ";
@@ -155,12 +174,13 @@ public:
             if (choice == "1") { // Run the step
                 // Ask the user to input the title and subtitle
                 std::cout << "---------------------------\n";
+                std::cout << "Running Title Ttep:\n";
                 std::cout << "Title: " << title << "\n";
                 std::cout << "Subtitle: " << subtitle << "\n";
 
                 break; // Exit and continue to the next step
             } else if (choice == "2") { // Skip the step
-                std::cout << "Skipping this step...\n";
+                std::cout << "Skipping this Title Step...\n";
                 addSkip();
                 break; // Exit and continue with the next step
             } else { // Invalid choice
@@ -173,7 +193,7 @@ public:
 
 
 // TextStep class
-// I think this was supposed to display 2 text inputs, not sure though
+// Both title and copy are inputted when the object is created
 class TextStep : public Step {
 private:
     // Couln't decide what copy was supposed to be, so it's just an input string
@@ -182,7 +202,26 @@ private:
 
 public:
     TextStep(std::string title, std::string copy) : title(title), copy(copy) {}
-    TextStep() : title("NO TITLE"), copy("NO COPY") {} // Default constructor
+    TextStep(std::string title) : title(title), copy("NO COPY") {}
+    TextStep() {
+        // Ask the user to input the title
+        std::cout << "---------------------------\n";
+        std::cout << "Creaging text step:\n";
+
+        // Get the title
+        std::cout << "Title: ";
+        std::string title;
+        getline(std::cin, title);
+        
+        // Get the copy (just some string text)
+        std::cout << "Copy: ";
+        std::string copy;
+        getline(std::cin, copy);
+
+        // Assign the input to it's respective field
+        this->title = title;
+        this->copy = copy;
+    } 
 
 
     // Returns the name of the step
@@ -191,6 +230,7 @@ public:
     }
 
 
+    // Displays the title and copy on the screen
     void displayInfoOnScreen() {
         std::cout << "Text Step -> Title: " << title << ", Copy: " << copy << "\n";
     }
@@ -221,7 +261,7 @@ public:
         while (true) {
             // Display available options
             std::cout << "---------------------------\n";
-            std::cout << "Running Text Step:\n";
+            std::cout << "Executing Text Step:\n";
             std::cout << "1. Run this step\n";
             std::cout << "2. Skip this step\n";
 
@@ -231,20 +271,13 @@ public:
             if (choice == "1") { // Run the step
                 // Ask the user to input the title and copy (just some text)
                 std::cout << "---------------------------\n";
-                std::cout << "Title: ";
-                std::string title;
-                getline(std::cin, title);
-                std::cout << "Copy: ";
-                std::string copy;
-                getline(std::cin, copy);
-
-                // Asign each of the new inputs to it's respective field
-                this->title = title;
-                this->copy = copy;
+                std::cout << "Running Text Step:\n";
+                std::cout << "Title: " << title << "\n";
+                std::cout << "Copy: " << copy << "\n";
 
                 break; // Exit and continue with the next step
             } else if (choice == "2") { // Skip the step
-                std::cout << "Skipping this step...\n";
+                std::cout << "Skipping this Text Step...\n";
                 addSkip();
                 break; // Exit and continue with the next step
             } else { // Invalid choice
@@ -257,7 +290,7 @@ public:
 
 
 // TextInput class
-// It's basically the same as the TextStep class, couldn't figure out the difference
+// Description is inputted when the object is created, text is inputted when the step is executed
 class TextInput : public Step {
 private:
     std::string description;
@@ -265,7 +298,19 @@ private:
 
 public:
     TextInput(std::string description, std::string text) : description(description), text(text) {}
-    TextInput() : description("NO DESCRIPTION"), text("NO TEXT") {} // Default constructor
+    TextInput(std::string description) : description(description), text("NO TEXT") {}
+    TextInput() {
+        std::cout << "---------------------------\n";
+        std::cout << "Creating text input step:\n";
+
+        // Get the description
+        std::cout << "Description: ";
+        std::string description;
+        getline(std::cin, description);
+
+        // Assign the input to it's respective field
+        this->description = description;
+    }
 
 
     // Returns the name of the step
@@ -298,10 +343,12 @@ public:
 
     // Main function that gets called when the step is executed
     void execute() override {
+        this->text = "NO TEXT"; // Reset the text to the default value
+
         while (true) {
             // Display available options
             std::cout << "---------------------------\n";
-            std::cout << "Running TextInput Step:\n";
+            std::cout << "Executing Text Input Step:\n";
             std::cout << "1. Run this step\n";
             std::cout << "2. Skip this step\n";
             std::cout << "Enter your choice: ";
@@ -311,20 +358,18 @@ public:
             if (choice == "1") { // Run the step
                 // Ask the user to input the description and text
                 std::cout << "---------------------------\n";
-                std::cout << "Description: ";
-                std::string description;
-                getline(std::cin, description);
-                std::cout << "Text: ";
+                std::cout << "Running Text Input Step:\n";
+                std::cout << "Description: " << description << "\n";
+                std::cout << "Enter your Text: ";
                 std::string text;
                 getline(std::cin, text);
 
-                // Asign each of the new inputs to it's respective field
-                this->description = description;
+                // Asign the new input to it's respective field
                 this->text = text;
 
                 break; // Exit and continue with the next step
             } else if (choice == "2") { // Skip the step
-                std::cout << "Skipping this step...\n";
+                std::cout << "Skipping this Text Input Step...\n";
                 addSkip();
                 break; // Exit and continue with the next step
             } else { // Invalid choice
@@ -345,7 +390,19 @@ private:
 
 public:
     NumberInput(std::string description, float number) : description(description), number(number) {}
-    NumberInput() : description("NO DESCRIPTION"), number(0) {} // Default constructor
+    NumberInput(std::string description) : description(description), number(0) {}
+    NumberInput() {
+        std::cout << "---------------------------\n";
+        std::cout << "Creating number input step:\n";
+
+        // Get the description
+        std::cout << "Description: ";
+        std::string description;
+        getline(std::cin, description);
+
+        // Assign the input to it's respective field
+        this->description = description;
+    }
 
 
     // Returns the name of the step
@@ -390,6 +447,8 @@ public:
 
     // Main function that gets called when the step is executed
     void execute() override {
+        this->number = 0; // Reset the number to the default value
+
         std::string choice;
 
         // The user can't continue unless he either completes the step
@@ -397,7 +456,7 @@ public:
         while (true) {
             // Display available options
             std::cout << "---------------------------\n";
-            std::cout << "Running NumberInput Step:\n";
+            std::cout << "Executing Number Input Step:\n";
             std::cout << "1. Run this step\n";
             std::cout << "2. Skip this step\n";
             std::cout << "Enter your choice: ";
@@ -406,17 +465,13 @@ public:
             if (choice == "1") { // Run the step
                 // Ask the user to input the description and number
                 std::cout << "---------------------------\n";
-                std::cout << "Description: ";
-                std::string description;
-                getline(std::cin, description);
-
-                // Assign the description to it's respective field
-                this->description = description;
+                std::cout << "Running Number Input Step:\n";
+                std::cout << "Description: " << description << "\n";
 
                 bool validNumber = false;
 
                 while (!validNumber) { // Keep asking for a number until the user enters a valid one
-                    std::cout << "Number: ";
+                    std::cout << "Enter your Number: ";
                     std::string number;
                     getline(std::cin, number); // Get the number as a string
 
@@ -431,7 +486,7 @@ public:
 
                 break;
             } else if (choice == "2") { // Skip the step
-                std::cout << "Skipping this step...\n";
+                std::cout << "Skipping this Number Input Step...\n";
                 addSkip();
                 break; // Exit and continue with the next step
             } else { // Invalid choice
@@ -522,7 +577,7 @@ public:
 
     // Displays the numbers and result on the screen
     void displayInfoOnScreen() {
-        std::cout << "Calculus Step -> Number 1: " << number1 << ", Number 2: " << number2 << ", Result: " << result << "\n";
+        std::cout << "Calculus Step -> Number 1: " << number1 << ", Number 2: " << number2 << ", Operation: " << operation << ", Result: " << result << "\n";
     }
 
 
@@ -538,6 +593,7 @@ public:
         file << "Calculus Step:\n";
         file << "Number 1: " << number1 << "\n";
         file << "Number 2: " << number2 << "\n";
+        file << "Operation: " << operation << "\n";
         file << "Result: " << result << "\n";
         file.close();
     }
@@ -550,7 +606,7 @@ public:
         while (true) {
             // Display available options
             std::cout << "---------------------------\n";
-            std::cout << "Running Calculus Step:\n";
+            std::cout << "Executing Calculus Step:\n";
             std::cout << "1. Run this step\n";
             std::cout << "2. Skip this step\n";
             std::cout << "Enter your choice: ";
@@ -564,6 +620,7 @@ public:
                 // Keep asking to choose a NumberInputStep until the user enters a valid one
                 while (chosenNumberInputIndex1 < 0 || chosenNumberInputIndex1 >= currentFlowNumberInputs.size()) {
                     std::cout << "---------------------------\n";
+                    std::cout << "Running Calculus Step:\n";
                     std::cout << "Choose the first number input step:\n";
 
                     // Display a list of available NumberInputStep objects and let the user choose
@@ -593,6 +650,7 @@ public:
                 int chosenNumberInputIndex2 = -1; // The index of the second NumberInputStep object
                 while (chosenNumberInputIndex2 < 0 || chosenNumberInputIndex2 >= currentFlowNumberInputs.size()) {
                     std::cout << "---------------------------\n";
+                    std::cout << "Running Calculus Step:\n";
                     std::cout << "Choose the second number input step:\n";
 
                     // Display a list of available NumberInputStep objects and let the user choose
@@ -627,6 +685,7 @@ public:
                 while (true) {
                     // Display available options
                     std::cout << "---------------------------\n";
+                    std::cout << "Running Calculus Step:\n";
                     std::cout << "Choose the operation:\n";
                     std::cout << "1. Addition\n";
                     std::cout << "2. Subtraction\n";
@@ -672,7 +731,7 @@ public:
                     }
                 }
             } else if (choice == "2") { // Skip the step
-                std::cout << "Skipping this step...\n";
+                std::cout << "Skipping this Calculus Step...\n";
                 addSkip();
                 return;
             } else { // Invalid choice
@@ -1121,10 +1180,10 @@ public:
 // Flow class
 class Flow {
 private:
-    int started = 0;
-    std::vector<Step*> steps;
-    std::string name;
-    std::string createdDate;
+    int started = 0; // Number of times the flow was started
+    std::vector<Step*> steps; // Stores all steps of the flow
+    std::string name; // Name of the flow
+    std::string createdDate; // Date and time when the flow was created
 
 public:
     Flow(std::string name) : name(name) { // Constructor
@@ -1278,11 +1337,12 @@ void clearCurrentSteps() {
 
 
 int main() {
-    std::vector<Flow*> flows;
+    std::vector<Flow*> flows; // Stores all the flows
 
     while (true) {
         try {
             // Initial options to create or execute a flow
+            std::cout << "---------------------------\n";
             std::cout << "---------------------------\n";
             std::cout << "1. Create a new flow\n";
             std::cout << "2. Execute a flow\n";
@@ -1329,20 +1389,11 @@ int main() {
                         // This is basically the end step, didn't need one specifically, so when the user adds the end step
                         // The execution of the flow just stops
                         flows.push_back(flow);
-                        break;
-                    } else if (stepChoice == "1") { // Create and add a new TitleStep
-                        // Ask the user to input the title and subtitle
-                        std::cout << "---------------------------\n";
-                        std::cout << "Creating title step:\n";
-                        std::cout << "Title: ";
-                        std::string title;
-                        getline(std::cin, title);
-                        std::cout << "Subtitle: ";
-                        std::string subtitle;
-                        getline(std::cin, subtitle);
+                        break; // Creating the flow is done, go back to the initial page
 
+                    } else if (stepChoice == "1") { // Create and add a new TitleStep
                         // Create the step and add it to the flow
-                        Step* step = new TitleStep(title, subtitle);
+                        Step* step = new TitleStep();
                         flow->addStep(step);
                         std::cout << "Title added successfully!\n";
                     } else if (stepChoice == "2") { // Create and add a new TextStep
@@ -1484,6 +1535,7 @@ int main() {
                 }
             } else if (choice == "5") {
                 // Exit the program
+                std::cout << "---------------------------\n";
                 std::cout << "Exiting...\n";
                 return 0;
             } else {
