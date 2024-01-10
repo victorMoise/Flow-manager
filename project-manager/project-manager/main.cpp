@@ -1135,6 +1135,7 @@ private:
             outputFile << line << "\n";
         }
 
+        // Close both files
         inputFile.close();
         outputFile.close();
     }
@@ -1162,7 +1163,7 @@ public:
     }
 
 
-    // Don't really need this, it just had to be defined
+    // Adds the description to the output file
     void AddDescriptionToFile(std::string name) {
         std::ofstream file(name, std::ios::app); // Open the file in append mode
         if (!file.is_open()) {
@@ -1190,20 +1191,27 @@ public:
             getline(std::cin, choice);
 
             if (choice == "1") { // Run the step
-                // Ask the user to input the title and description of the output
                 std::cout << "---------------------------\n";
+
+                // Ask for the name of the output file that should be created
                 std::cout << "Enter the title of the output: ";
                 getline(std::cin, title);
+
+                // Ask for the description of the output file
                 std::cout << "Enter the description of the output: ";
                 getline(std::cin, description);
+
+                // Set the class member to the respective value
                 this->description = description + "\n";
 
-                AddDescriptionToFile(title + ".txt"); // Add the description to the output file
+                // Add the description to the output file
+                AddDescriptionToFile(title + ".txt"); 
 
                 std::string prevChoice = "0";
 
                 // User is asked to add information from previous steps until he choses "n" or "N"
                 while (prevChoice != "y" || prevChoice != "Y" || prevChoice != "n" || prevChoice != "N") {
+                    // Prompt the user to add info from a previous step
                     std::cout << "---------------------------\n";
                     std::cout << "Do you want to display a previous step's info? (y/n): ";
                     getline(std::cin, prevChoice);
@@ -1315,6 +1323,7 @@ public:
         std::cout << "---------------------------\n";
         std::cout << "Skips for each step:\n";
 
+        // Loop through all steps of the flow
         for (size_t i = 0; i < steps.size(); i++) {
             // Display the name of the step and the number of times it was skipped
             std::cout << "Step " << i + 1 << ", " << steps[i]->getStepName() << ": Skipped = " << steps[i]->getSkips() << "\n";
@@ -1362,7 +1371,7 @@ public:
         std::cout << "---------------------------\n";
         std::cout << "Executing flow: " << name << "\n";
 
-        // 
+        // Loop through all steps of the flow
         for (auto step : steps) {
             if (step != nullptr) { // null check
                 if (dynamic_cast<NumberInput<float>*>(step) != nullptr) { // Check if current step is a NumberInputStep
@@ -1465,7 +1474,6 @@ int main() {
                     std::string stepChoice;
                     getline(std::cin, stepChoice);
 
-
                     if (stepChoice == "0") { // Add the flow to the list of flows and exit the loop
                         // This is basically the end step, didn't need one specifically, so when the user adds the end step
                         // The execution of the flow just stops
@@ -1558,7 +1566,6 @@ int main() {
                 std::cout << "\nEnter your choice: ";
                 std::string flowChoice;
                 getline(std::cin, flowChoice);
-
 
                 // Transform the input into an integer
                 try {
