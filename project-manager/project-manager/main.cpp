@@ -1022,6 +1022,25 @@ class DisplayStep : public Step {
 private:
     std::string filename;
 
+    bool emptyFileAndCsvSteps() {
+        bool csv = false;
+        bool text = false;
+
+        for (auto file : currentFlowTextFileSteps) {
+            if (file->getName() != "NOFILE") {
+                text = true;
+            }
+        }
+
+        for (auto file : currentFlowCsvFileSteps) {
+            if (file->getName() != "NOFILE") {
+                csv = true;
+            }
+        }
+
+        return csv || text;
+    }
+
 public:
     DisplayStep(std::string filename) : filename(filename) {}
     DisplayStep() : filename("NOFILE") {} // Default constructor
@@ -1060,6 +1079,14 @@ public:
             getline(std::cin, choice);
 
             if (choice == "1") { // Run the step
+
+                // If there's no previous text or csv file, display stpe gets skipped forcefully
+                if (!emptyFileAndCsvSteps()) {
+                    std::cout << "Can't run Display Step, no file available to be displayed!\n";
+                    std::cout << "Skipping this Display Step...\n";
+                    return;
+                }
+
                 while (true) {
                     // Display all available text and csv files
                     std::cout << "---------------------------\n";
