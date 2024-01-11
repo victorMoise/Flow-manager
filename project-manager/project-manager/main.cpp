@@ -316,11 +316,11 @@ public:
 class TextInput : public Step {
 private:
     std::string description;
-    std::string text;
+    std::string text = "NOTEXT";
 
 public:
     TextInput(std::string description, std::string text) : description(description), text(text) {}
-    TextInput(std::string description) : description(description), text("NO TEXT") {}
+    TextInput(std::string description) : description(description), text("NOTEXT") {}
     TextInput() {
         std::cout << "---------------------------\n";
         std::cout << "Creating text input step:\n";
@@ -365,7 +365,7 @@ public:
 
     // Main function that gets called when the step is executed
     void execute() override {
-        this->text = "NO TEXT"; // Reset the text to the default value
+        this->text = "NOTEXT"; // Reset the text to the default value
 
         while (true) {
             // Display available options
@@ -391,6 +391,7 @@ public:
 
                 break; // Exit and continue with the next step
             } else if (choice == "2") { // Skip the step
+                this->text = "NOTEXT"; // Reset the input, in case the step was executed before
                 std::cout << "Skipping this Text Input Step...\n";
                 addSkip();
                 break; // Exit and continue with the next step
@@ -508,6 +509,7 @@ public:
 
                 break;
             } else if (choice == "2") { // Skip the step
+                this->number = 0; // Reset the input, in case the step was executed before
                 std::cout << "Skipping this Number Input Step...\n";
                 addSkip();
                 break; // Exit and continue with the next step
@@ -878,6 +880,7 @@ public:
 
                 return; // Exit and continue with the next step
             } else if (choice == "2") { // Skip the step 
+                this->name = "NOFILE"; // Reset the input, in case the step was executed before
                 std::cout << "Skipping this step...\n";
                 addSkip();
                 break; // Exit and continue with the next step
@@ -1001,6 +1004,7 @@ public:
 
                 return; // Exit and continue with the next step
             } else if (choice == "2") {
+                this->name == "NOFILE"; // Reset the input, in case the step was executed before
                 std::cout << "Skipping this step...\n";
                 addSkip();
                 break; // Exit and continue with the next step
