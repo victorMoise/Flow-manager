@@ -1,0 +1,19 @@
+kjdhfgkjsdhfkg
+---------------------------
+Title Step:
+Title: title
+Subtitle: subtitle
+---------------------------
+Text Input Step:
+Text Description: descriere
+Text Input: inpouerty
+---------------------------
+NumberInput Step:
+Description: dsfgdsfg
+Number: 12
+---------------------------
+Calculus Step:
+Number 1: 12
+Number 2: 234
+Operation: Multiplication
+Result: 2808
