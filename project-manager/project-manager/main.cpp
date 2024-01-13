@@ -649,6 +649,12 @@ public:
             // If the user ran the step, he can't skip it unless he finishes it
             if (choice == "1") { // Run the step
                 int chosenNumberInputIndex1 = -1; // The index of the first NumberInputStep object
+
+                if (currentFlowNumberInputs.size() == 0) { // If there are no NumberInputStep objects, the step can't be executed
+                    std::cout << "There are no Number Input Steps! Please create one first.\n";
+                    addErrorAtIndex(0); // Error on the first screen
+                    return;
+                }
                 
                 // Keep asking to choose a NumberInputStep until the user enters a valid one
                 while (chosenNumberInputIndex1 < 0 || chosenNumberInputIndex1 >= currentFlowNumberInputs.size()) {
