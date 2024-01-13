@@ -567,7 +567,15 @@ private:
     // Performs the Division operation
     void divide() {
         operation = "Division";
-        result = number1 / number2;
+        try {
+            if (number2 == 0) {
+                throw std::runtime_error("Division by zero is not allowed.");
+            }
+            result = number1 / number2;
+        } catch (const std::exception& e) {
+            std::cout << "Error: " << e.what() << std::endl;
+            addErrorAtIndex(2); // Error on the third screen
+        }
     }
 
 
@@ -1238,6 +1246,12 @@ public:
 
                 // Add the description to the output file
                 AddDescriptionToFile(title + ".txt"); 
+
+                if (currentFlowSteps.size() == 1) { // If there are no steps in the flow, the output step gets skipped forcefully
+                    std::cout << "There are no previous steps to be added!\n";
+                    std::cout << "Skipping this Output Step...\n";
+                    return;
+                }
 
                 std::string prevChoice = "0";
 
